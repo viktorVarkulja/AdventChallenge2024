@@ -57,62 +57,36 @@ string Guard::display_guard(){
 
     //moves guard by one point in specified direction
     //rotates right and moves by one if obstacle(#) encountered
-    bool Guard::move_guard(vector<string> &field){
+    bool Guard::move_guard(vector<string> &field, int challenge_num){
 
         //defining the bounds
         int y_max_size = field.size();
         int x_max_size = field.at(0).size() - 1; //excluding \0 EoL character 
 
         //changing the current position on playing field to X
-        field.at(pos_y).replace(pos_x, 1,1,'X');
+        if(challenge_num==1){
+            field.at(pos_y).replace(pos_x, 1,1,'X');
+        }
 
         //each case checks if players next move is in playing field
         switch (direction){
             case '^':
-                if(pos_y-1 >= 0){
-                    if(field.at(pos_y-1)[pos_x]=='#'){
-                        direction = '>';
-                        increment_x();
-                    }else{
-                        decrement_y();
-                    }
-                }else{
+                if(!move_up(field)){
                     return false;
                 }
                 break;
             case '>':
-                if(pos_x+1 <= x_max_size){
-                    if(field.at(pos_y)[pos_x+1]=='#'){
-                        direction = 'v';
-                        increment_y();
-                    }else{
-                        increment_x();
-                    }
-                }else{
+                if(!move_right(field, x_max_size)){
                     return false;
                 }
                 break;
             case 'v':
-                if(pos_y+1 <= y_max_size){
-                    if(field.at(pos_y+1)[pos_x] == '#'){
-                        direction = '<';
-                        decrement_x();
-                    }else{
-                        increment_y();
-                    }
-                }else{
+                if(!move_down(field, y_max_size)){
                     return false;
                 }
                 break;
             case '<':
-                if(pos_x-1 >= 0){
-                    if(field.at(pos_y)[pos_x-1] == '#'){
-                        direction = '^';
-                        decrement_y();
-                    }else{
-                        decrement_x();
-                    }
-                }else{
+                if(!move_left(field)){
                     return false;
                 }
                 break;
@@ -120,5 +94,73 @@ string Guard::display_guard(){
                 break;
         }
 
+        return true;
+    }
+
+
+    bool Guard::move_up(vector<string> &field){
+        if(pos_y-1 >= 0){
+            char next_pos = field.at(pos_y-1)[pos_x];
+            if(next_pos=='#'||next_pos=='O'){
+                direction = '>';
+                increment_x();
+            }else{
+                decrement_y();
+            }
+        }else{
+            return false;
+        }
+        return true;
+    }
+
+    bool Guard::move_left(vector<string> &field){
+        if(pos_x-1 >= 0){
+            char next_pos = field.at(pos_y)[pos_x-1];
+
+            if(next_pos == '#' || next_pos == 'O'){
+                direction = '^';
+                decrement_y();
+            }else{
+                decrement_x();
+            }
+        }else{
+            return false;
+        }
+
+        return true;
+    }
+    bool Guard::move_right(vector<string> &field, int x_max_size){
+        
+        if(pos_x+1 <= x_max_size){
+            char next_pos = field.at(pos_y)[pos_x+1];
+
+            if(next_pos == '#' || next_pos == 'O'){
+                direction = 'v';
+                increment_y();
+            }else{
+                increment_x();
+            }
+        }else{
+            return false;
+        }
+
+        return true;
+    }
+
+
+    bool Guard::move_down(vector<string> &field, int y_max_size){
+
+        if(pos_y+1 <= y_max_size){
+            char next_pos = field.at(pos_y+1)[pos_x];
+
+            if(next_pos == '#' || next_pos == 'O'){
+                direction = '<';
+                decrement_x();
+            }else{
+                increment_y();
+            }
+        }else{
+            return false;
+        }
         return true;
     }

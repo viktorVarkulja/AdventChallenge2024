@@ -41,7 +41,11 @@ public:
 
     string display_guard();
 
-    bool move_guard(vector<string> &field);
+    bool move_guard(vector<string> &field, int);
+    bool move_up(vector<string> &field);
+    bool move_left(vector<string> &field);
+    bool move_right(vector<string> &field, int);
+    bool move_down(vector<string> &field, int);
 };
 
 #endif

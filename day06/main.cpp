@@ -14,14 +14,18 @@ int main(){
     bool in_bounds{true};
     int distinct_positions{0};
     string map_after;
+    int start_x{0}, start_y{0};
 
     
     //initial position and direction
     //filling vector with playing field
     while(getline(inputFile, line)){
         if(line.find('^') < line.size()){
-            guard.set_positions(line.find('^'), line_count);
+            start_x = line.find('^');
+            start_y = line_count;
+            guard.set_positions(start_x, line_count);
             guard.set_direction('^');
+
         }
 
         lab_map.push_back(line);
@@ -29,11 +33,13 @@ int main(){
     }
     inputFile.close();
 
+    vector<string> lab_map_2 (lab_map);
+    Guard guard_2(guard);
 
     //moving guard by rules
     while(in_bounds){
         //cout << guard.display_guard() << endl;
-        in_bounds = guard.move_guard(lab_map);
+        in_bounds = guard.move_guard(lab_map,1);
     }
 
 
@@ -58,5 +64,37 @@ int main(){
     outputFile.close();
 
     cout << "\n\n\nThe number of distinct positions is: \e[1m" + to_string(distinct_positions) + "\e[0m"<< endl;
+
+   
+
+    int loop_option{0};
+    long count{0};
+    line = "";
+
+    for(int j = 0; j<lab_map_2.size(); j++){
+        line = lab_map_2[j];
+        for(int i=0; i<line.size(); i++){
+            count++;
+            if(line[i]!='#'&&line[i]!='^'){
+                lab_map_2[j].replace(i,1,1,'O');
+                in_bounds = true;
+                while(in_bounds){
+                    in_bounds = guard_2.move_guard(lab_map_2,2);
+                    
+                    if(guard_2.get_x() == start_x && guard_2.get_y()==start_y && guard_2.get_direction() == '^'){
+                        loop_option++;
+                        break;
+                    }
+                }
+                lab_map_2[j].replace(i,1,1,'.');
+                guard_2.set_positions(start_x, start_y);
+                guard_2.set_direction('^');
+            }
+        }
+    }
+    cout << count <<endl;
+
+    cout << "\n\n\nThe number of different options with obstruction is: \e[1m" + to_string(loop_option) + "\e[0m"<< endl;
+
     cout<<"Press Enter to exit..."; cin.get();
 }
